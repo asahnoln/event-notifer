@@ -62,7 +62,7 @@ func generateMessage(es []Event) string {
 	}
 	fmt.Fprintf(message, general, what)
 	for _, e := range es {
-		fmt.Fprintf(message, tmpl, e.What, e.Where, strings.Join(e.Who, ", "), "", "")
+		fmt.Fprintf(message, tmpl, e.What, e.Where, strings.Join(e.Who, ", "), e.Start, e.End)
 	}
 
 	return message.String()
