@@ -1,8 +1,12 @@
 #+TITLE: Readme
 
 * What to do
-** PROJ Get events
-*** TODO Get tomorrow events
+** DONE Get events
+*** DONE Get tomorrow events
 What, where and who
-*** TODO Get today events
-** TODO Send message somewhere
+*** DONE Get today events
+** PROJ Google Calendar
+*** DONE Get events from calendar
+*** TODO Differentiate tommorow and today
+** DONE Send message somewhere
+** TODO Integrate sending with Telegram
