@@ -14,6 +14,8 @@ func TestGCalSuccessfulConnection(t *testing.T) {
 	want := pkg.Event{
 		"Pair Training",
 		"Dom 36",
+		"01.05.2014 11:00",
+		"01.05.2014 13:00",
 		[]string{"Andrey Kolosov"},
 	}
 	ts := fakeServer(&want)
@@ -46,6 +48,12 @@ func fakeServer(data *pkg.Event) *httptest.Server {
 					},
 					Location: data.Where,
 					Summary:  data.What,
+					Start: &calendar.EventDateTime{
+						DateTime: "2014-05-01T11:00:00Z",
+					},
+					End: &calendar.EventDateTime{
+						DateTime: "2014-05-01T13:00:00Z",
+					},
 				},
 			},
 		}

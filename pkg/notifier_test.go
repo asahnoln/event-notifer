@@ -1,8 +1,8 @@
 package pkg_test
 
 import (
-	"bytes"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/asahnoln/event-notifier/pkg"
@@ -23,6 +23,8 @@ var db = &stubStore{
 				What:  "Scene 2.5",
 				Where: "Dom, Great Hall",
 				Who:   []string{"Ivan", "Erkanat"},
+				Start: "08.11.2019 19:00",
+				End:   "08.11.2019 22:00",
 			},
 		},
 		pkg.Today: {
@@ -30,6 +32,8 @@ var db = &stubStore{
 				What:  "Scene 2.6",
 				Where: "Dom, Second Room",
 				Who:   []string{"Varvara", "Kamila"},
+				Start: "04.10.2021 15:00",
+				End:   "04.10.2019 18:00",
 			},
 		},
 	},
@@ -48,16 +52,34 @@ func TestGetTodayEvents(t *testing.T) {
 	assertSameStruct(t, db.events[pkg.Today][0], es[0])
 }
 
+type stubSender struct {
+	result string
+}
+
+func (s *stubSender) Send(message string) error {
+	s.result = message
+	return nil
+}
+
 func TestSendMessageForEvent(t *testing.T) {
 	es, _ := pkg.TomorrowEvents(db)
 
-	w := &bytes.Buffer{}
-	pkg.Send(es, w)
+	sdr := &stubSender{}
+	pkg.Send(es, sdr)
 
-	want := es[0].What
-	got := w.String()
-	if want != got {
-		t.Errorf("want sent message %q, got %q", want, got)
+	want := es[0]
+	assertContains(t, want.What, sdr.result)
+	assertContains(t, want.Where, sdr.result)
+	for _, p := range want.Who {
+		assertContains(t, p, sdr.result)
+	}
+}
+
+func assertContains(t testing.TB, want, got string) {
+	t.Helper()
+
+	if !strings.Contains(got, want) {
+		t.Errorf("want substring %q in string %q, don't have it", want, got)
 	}
 }
 

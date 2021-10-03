@@ -43,9 +43,20 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 			names = append(names, a.DisplayName)
 		}
 
+		start, err := time.Parse(time.RFC3339, e.Start.DateTime)
+		if err != nil {
+			return result, err
+		}
+		end, err := time.Parse(time.RFC3339, e.End.DateTime)
+		if err != nil {
+			return result, err
+		}
+
 		result = append(result, Event{
 			e.Summary,
 			e.Location,
+			start.Format("02.01.2006 15:04"),
+			end.Format("02.01.2006 15:04"),
 			names,
 		})
 	}
