@@ -12,8 +12,8 @@ type stubStore struct {
 	events map[pkg.EventType][]pkg.Event
 }
 
-func (s *stubStore) Events(when pkg.EventType) []pkg.Event {
-	return s.events[when]
+func (s *stubStore) Events(when pkg.EventType) ([]pkg.Event, error) {
+	return s.events[when], nil
 }
 
 var db = &stubStore{
@@ -36,20 +36,20 @@ var db = &stubStore{
 }
 
 func TestGetTomorrowEvents(t *testing.T) {
-	es := pkg.TomorrowEvents(db)
+	es, _ := pkg.TomorrowEvents(db)
 	assertSameLength(t, 1, len(es))
 
 	assertSameStruct(t, db.events[pkg.Tomorrow][0], es[0])
 }
 
 func TestGetTodayEvents(t *testing.T) {
-	es := pkg.TodayEvents(db)
+	es, _ := pkg.TodayEvents(db)
 
 	assertSameStruct(t, db.events[pkg.Today][0], es[0])
 }
 
 func TestSendMessageForEvent(t *testing.T) {
-	es := pkg.TomorrowEvents(db)
+	es, _ := pkg.TomorrowEvents(db)
 
 	w := &bytes.Buffer{}
 	pkg.Send(es, w)

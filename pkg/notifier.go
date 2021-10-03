@@ -15,14 +15,14 @@ type Event struct {
 }
 
 type Store interface {
-	Events(when EventType) []Event
+	Events(when EventType) ([]Event, error)
 }
 
-func TomorrowEvents(store Store) []Event {
+func TomorrowEvents(store Store) ([]Event, error) {
 	return store.Events(Tomorrow)
 }
 
-func TodayEvents(store Store) []Event {
+func TodayEvents(store Store) ([]Event, error) {
 	return store.Events(Today)
 }
 
