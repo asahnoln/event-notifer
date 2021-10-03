@@ -9,4 +9,6 @@ What, where and who
 *** DONE Get events from calendar
 *** TODO Differentiate tommorow and today
 ** DONE Send message somewhere
-** TODO Integrate sending with Telegram
+** DONE Integrate sending with Telegram
+** TODO Test if Tg set up correctly, have to be error somewhere
+** TODO Test times for tomorrow and today for real (use it in cal as well)
