@@ -1,5 +1,7 @@
 package pkg
 
+import "io"
+
 type EventType int
 
 const (
@@ -22,4 +24,8 @@ func TomorrowEvents(store Store) []Event {
 
 func TodayEvents(store Store) []Event {
 	return store.Events(Today)
+}
+
+func Send(es []Event, w io.Writer) {
+	w.Write([]byte(es[0].What))
 }

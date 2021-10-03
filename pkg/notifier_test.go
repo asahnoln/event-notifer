@@ -1,6 +1,7 @@
 package pkg_test
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 
@@ -45,6 +46,19 @@ func TestGetTodayEvents(t *testing.T) {
 	es := pkg.TodayEvents(db)
 
 	assertSameStruct(t, db.events[pkg.Today][0], es[0])
+}
+
+func TestSendMessageForEvent(t *testing.T) {
+	es := pkg.TomorrowEvents(db)
+
+	w := &bytes.Buffer{}
+	pkg.Send(es, w)
+
+	want := es[0].What
+	got := w.String()
+	if want != got {
+		t.Errorf("want sent message %q, got %q", want, got)
+	}
 }
 
 func assertSameStruct(t testing.TB, want, got interface{}) {
