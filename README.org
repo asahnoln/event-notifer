@@ -1,0 +1,8 @@
+#+TITLE: Readme
+
+* What to do
+** PROJ Get events
+*** TODO Get tomorrow events
+What, where and who
+*** TODO Get today events
+** TODO Send message somewhere
