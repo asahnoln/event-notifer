@@ -1,8 +1,6 @@
 package pkg_test
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"testing"
 
@@ -49,20 +47,4 @@ func TestTelegramSendSuccess(t *testing.T) {
 		assertContains(t, want.What, gotVals.Get("text"))
 	}
 	assertSameString(t, "testId", gotVals.Get("chat_id"), "want chat id %q, got %q")
-}
-
-func fakeTgServer(vals *url.Values) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
-		*vals = r.PostForm
-	}))
-
-}
-
-func assertSameString(t testing.TB, want, got, message string) {
-	t.Helper()
-
-	if want != got {
-		t.Errorf(message, want, got)
-	}
 }

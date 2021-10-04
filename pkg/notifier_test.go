@@ -1,8 +1,6 @@
 package pkg_test
 
 import (
-	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/asahnoln/event-notifier/pkg"
@@ -72,29 +70,5 @@ func TestSendMessageForEvent(t *testing.T) {
 	assertContains(t, want.Where, sdr.result)
 	for _, p := range want.Who {
 		assertContains(t, p, sdr.result)
-	}
-}
-
-func assertContains(t testing.TB, want, got string) {
-	t.Helper()
-
-	if !strings.Contains(got, want) {
-		t.Errorf("want substring %q in string %q, don't have it", want, got)
-	}
-}
-
-func assertSameStruct(t testing.TB, want, got interface{}) {
-	t.Helper()
-
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("want event structure %+v, got %+v", want, got)
-	}
-}
-
-func assertSameLength(t testing.TB, want, got int) {
-	t.Helper()
-
-	if want != got {
-		t.Fatalf("want events length %d, got %d", want, got)
 	}
 }
