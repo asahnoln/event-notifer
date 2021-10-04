@@ -13,5 +13,6 @@ What, where and who
 ** TODO Test if Tg set up correctly, have to be error somewhere
 ** DONE Test times for tomorrow and today for real (use it in cal as well)
 ** TODO People names in template
+** TODO Proper date in template message
 ** TODO Tomorrow/today word in template
 ** TODO Simplify api usage?
