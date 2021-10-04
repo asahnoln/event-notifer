@@ -12,3 +12,6 @@ What, where and who
 ** DONE Integrate sending with Telegram
 ** TODO Test if Tg set up correctly, have to be error somewhere
 ** DONE Test times for tomorrow and today for real (use it in cal as well)
+** TODO People names in template
+** TODO Tomorrow/today word in template
+** TODO Simplify api usage?
