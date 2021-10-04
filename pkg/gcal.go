@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"google.golang.org/api/calendar/v3"
@@ -9,12 +10,13 @@ import (
 )
 
 type GCalStore struct {
-	calendarId string
-	opts       []option.ClientOption
+	calendarId  string
+	mailsReader io.Reader
+	opts        []option.ClientOption
 }
 
-func NewGCalStore(calendarId string, opts ...option.ClientOption) *GCalStore {
-	return &GCalStore{calendarId, opts}
+func NewGCalStore(calendarId string, mails io.Reader, opts ...option.ClientOption) *GCalStore {
+	return &GCalStore{calendarId, mails, opts}
 }
 
 func (s *GCalStore) Events(when EventType) ([]Event, error) {
@@ -48,9 +50,13 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 	// TODO: Allocate the same length immediately as es.Items
 	var result []Event
 	for _, e := range es.Items {
-		var names []string
-		for _, a := range e.Attendees {
-			names = append(names, a.DisplayName)
+		mails := make([]string, len(e.Attendees))
+		for i, a := range e.Attendees {
+			mails[i] = a.Email
+		}
+		names, err := MailsToNames(mails, s.mailsReader)
+		if err != nil {
+			return result, err
 		}
 
 		start, err := time.Parse(time.RFC3339, e.Start.DateTime)

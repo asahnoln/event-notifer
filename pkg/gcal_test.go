@@ -3,6 +3,7 @@ package pkg_test
 import (
 	"fmt"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -21,7 +22,10 @@ func TestGCalSuccessfulConnection(t *testing.T) {
 	ts := fakeServer(fakeResponse(&want))
 	defer ts.Close()
 
-	gcal := pkg.NewGCalStore("calTestId", option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+	gcal := pkg.NewGCalStore("calTestId",
+		strings.NewReader(`{"ivan@gmail.com": "Andrey Kolosov"}`),
+		option.WithoutAuthentication(),
+		option.WithEndpoint(ts.URL))
 	es, err := pkg.TomorrowEvents(gcal)
 
 	assertNoError(t, err, "unexpected error while working with gcal store: %v")
@@ -52,7 +56,7 @@ func TestGCalProperTiming(t *testing.T) {
 			ts := fakeServer(timeChecker(tt.start, tt.end, &vals))
 			defer ts.Close()
 
-			gcal := pkg.NewGCalStore("calTestId", option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+			gcal := pkg.NewGCalStore("calTestId", nil, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
 			_, _ = tt.eventFunc(gcal)
 
 			assertSameString(t, tt.start.Format(time.RFC3339), vals.Get("timeMin"), "want start time %q, got %q")
@@ -62,7 +66,7 @@ func TestGCalProperTiming(t *testing.T) {
 }
 
 func TestGCalErrorWhenWrongSettings(t *testing.T) {
-	gcal := pkg.NewGCalStore("")
+	gcal := pkg.NewGCalStore("", nil)
 	_, err := pkg.TomorrowEvents(gcal)
 	assertError(t, err, "expected error with no calendar id, got nil")
 

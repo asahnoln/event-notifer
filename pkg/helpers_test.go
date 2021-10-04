@@ -24,7 +24,7 @@ func fakeResponse(data *pkg.Event) http.HandlerFunc {
 				{
 					Attendees: []*calendar.EventAttendee{
 						{
-							DisplayName: data.Who[0],
+							Email: "ivan@gmail.com",
 						},
 					},
 					Location: data.Where,
