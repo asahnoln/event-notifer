@@ -16,11 +16,15 @@ func main() {
 	tomorrow := flag.Bool("tomorrow", false, "Use this flag if you need tomorrow events")
 	flag.Parse()
 
-	cal := pkg.NewGCalStore(os.Getenv("GCALID"), option.WithCredentialsFile(os.Getenv("GCALCRED")))
+	file, err := os.Open(os.Getenv("GCALMAILNAMES"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cal := pkg.NewGCalStore(os.Getenv("GCALID"), file, option.WithCredentialsFile(os.Getenv("GCALCRED")))
 
 	var (
-		es  []pkg.Event
-		err error
+		es []pkg.Event
 	)
 	if *tomorrow {
 		es, err = pkg.TomorrowEvents(cal)

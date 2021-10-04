@@ -22,10 +22,12 @@ func TestGCalSuccessfulConnection(t *testing.T) {
 	ts := fakeServer(fakeResponse(&want))
 	defer ts.Close()
 
-	gcal := pkg.NewGCalStore("calTestId",
+	gcal := pkg.NewGCalStore(
+		"calTestId",
 		strings.NewReader(`{"ivan@gmail.com": "Andrey Kolosov"}`),
 		option.WithoutAuthentication(),
-		option.WithEndpoint(ts.URL))
+		option.WithEndpoint(ts.URL),
+	)
 	es, err := pkg.TomorrowEvents(gcal)
 
 	assertNoError(t, err, "unexpected error while working with gcal store: %v")
