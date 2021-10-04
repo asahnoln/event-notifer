@@ -19,23 +19,33 @@ func NewGCalStore(calendarId string, opts ...option.ClientOption) *GCalStore {
 
 func (s *GCalStore) Events(when EventType) ([]Event, error) {
 	ctx := context.Background()
-
 	srv, err := calendar.NewService(ctx, s.opts...)
-
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: Test time!
+	var (
+		min, max time.Time
+	)
+	switch when {
+	case Today:
+		min = time.Now()
+		max = min.AddDate(0, 0, 1).Truncate(24 * time.Hour)
+	default:
+		min = time.Now().AddDate(0, 0, 1).Truncate(24 * time.Hour)
+		max = min.AddDate(0, 0, 1)
+	}
+
 	es, err := srv.Events.List(s.calendarId).
-		TimeMin(time.Now().AddDate(0, 0, 1).Format(time.RFC3339)).
-		TimeMax(time.Now().AddDate(0, 0, 2).Format(time.RFC3339)).
+		TimeMin(min.Format(time.RFC3339)).
+		TimeMax(max.Format(time.RFC3339)).
 		Do()
 
 	if err != nil {
 		return nil, err
 	}
 
+	// TODO: Allocate the same length immediately as es.Items
 	var result []Event
 	for _, e := range es.Items {
 		var names []string
