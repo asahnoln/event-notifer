@@ -2,6 +2,7 @@ package pkg_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/asahnoln/event-notifier/pkg"
 )
@@ -85,4 +86,22 @@ func TestTodayWordInMessage(t *testing.T) {
 	sdr := &stubSender{}
 	pkg.Send(es, sdr, pkg.Today)
 	assertContains(t, "Сегодня", sdr.result)
+}
+
+func TestProperDateInMessageToday(t *testing.T) {
+	es, _ := pkg.TodayEvents(db)
+	sdr := &stubSender{}
+	pkg.Send(es, sdr, pkg.Today)
+
+	date := time.Now().Format("02.01.2006")
+	assertContains(t, date, sdr.result)
+}
+
+func TestProperDateInMessageTomorrow(t *testing.T) {
+	es, _ := pkg.TomorrowEvents(db)
+	sdr := &stubSender{}
+	pkg.Send(es, sdr, pkg.Tomorrow)
+
+	date := time.Now().AddDate(0, 0, 1).Format("02.01.2006")
+	assertContains(t, date, sdr.result)
 }

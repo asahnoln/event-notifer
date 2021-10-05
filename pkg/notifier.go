@@ -3,6 +3,7 @@ package pkg
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type EventType int
@@ -43,7 +44,7 @@ func generateMessage(es []Event, when EventType) string {
 	general := `
 ❗️ %s %s!
 
-08.11.2019
+%s
 
 `[1:]
 
@@ -56,15 +57,17 @@ func generateMessage(es []Event, when EventType) string {
 
 `[1:]
 
-	whenWord := "Завтра"
-	if when == Today {
-		whenWord = "Сегодня"
+	timeWord := time.Now().Format("02.01.2006")
+	whenWord := "Сегодня"
+	if when == Tomorrow {
+		whenWord = "Завтра"
+		timeWord = time.Now().AddDate(0, 0, 1).Format("02.01.2006")
 	}
 	what := "репетиция"
 	if len(es) > 1 {
 		what = "репетиции"
 	}
-	fmt.Fprintf(message, general, whenWord, what)
+	fmt.Fprintf(message, general, whenWord, what, timeWord)
 
 	for _, e := range es {
 		fmt.Fprintf(message, tmpl, e.What, e.Where, strings.Join(e.Who, ", "), e.Start, e.End)
