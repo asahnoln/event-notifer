@@ -41,6 +41,9 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 	es, err := srv.Events.List(s.calendarId).
 		TimeMin(min.Format(time.RFC3339)).
 		TimeMax(max.Format(time.RFC3339)).
+		ShowDeleted(false).
+		SingleEvents(true).
+		OrderBy("startTime").
 		Do()
 
 	if err != nil {

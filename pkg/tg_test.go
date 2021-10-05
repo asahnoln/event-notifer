@@ -40,7 +40,7 @@ func TestTelegramSendSuccess(t *testing.T) {
 
 	sdr := pkg.NewTg("secretKey", "testId")
 	sdr.Endpoint = ts.URL
-	err := pkg.Send(es, sdr)
+	err := pkg.Send(es, sdr, pkg.Tomorrow)
 
 	assertNoError(t, err, "unexpected error while sending message to Telegram: %v")
 	for _, want := range es {

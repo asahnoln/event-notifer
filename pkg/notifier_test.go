@@ -63,7 +63,7 @@ func TestSendMessageForEvent(t *testing.T) {
 	es, _ := pkg.TomorrowEvents(db)
 
 	sdr := &stubSender{}
-	pkg.Send(es, sdr)
+	pkg.Send(es, sdr, pkg.Tomorrow)
 
 	want := es[0]
 	assertContains(t, want.What, sdr.result)
@@ -71,4 +71,18 @@ func TestSendMessageForEvent(t *testing.T) {
 	for _, p := range want.Who {
 		assertContains(t, p, sdr.result)
 	}
+}
+
+func TestTomorrowWordInMessage(t *testing.T) {
+	es, _ := pkg.TomorrowEvents(db)
+	sdr := &stubSender{}
+	pkg.Send(es, sdr, pkg.Tomorrow)
+	assertContains(t, "Завтра", sdr.result)
+}
+
+func TestTodayWordInMessage(t *testing.T) {
+	es, _ := pkg.TodayEvents(db)
+	sdr := &stubSender{}
+	pkg.Send(es, sdr, pkg.Today)
+	assertContains(t, "Сегодня", sdr.result)
 }

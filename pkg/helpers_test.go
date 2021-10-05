@@ -4,13 +4,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"time"
 
 	"github.com/asahnoln/event-notifier/pkg"
 	"google.golang.org/api/calendar/v3"
 )
 
-func timeChecker(start, end time.Time, vals *url.Values) http.HandlerFunc {
+func paramsChecker(vals *url.Values) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		*vals = r.Form

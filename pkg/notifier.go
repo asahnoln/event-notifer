@@ -33,15 +33,15 @@ func TodayEvents(store Store) ([]Event, error) {
 	return store.Events(Today)
 }
 
-func Send(es []Event, sdr Sender) error {
-	return sdr.Send(generateMessage(es))
+func Send(es []Event, sdr Sender, when EventType) error {
+	return sdr.Send(generateMessage(es, when))
 }
 
-func generateMessage(es []Event) string {
+func generateMessage(es []Event, when EventType) string {
 	message := &strings.Builder{}
 
 	general := `
-❗️ Завтра %s!
+❗️ %s %s!
 
 08.11.2019
 
@@ -56,11 +56,16 @@ func generateMessage(es []Event) string {
 
 `[1:]
 
+	whenWord := "Завтра"
+	if when == Today {
+		whenWord = "Сегодня"
+	}
 	what := "репетиция"
 	if len(es) > 1 {
 		what = "репетиции"
 	}
-	fmt.Fprintf(message, general, what)
+	fmt.Fprintf(message, general, whenWord, what)
+
 	for _, e := range es {
 		fmt.Fprintf(message, tmpl, e.What, e.Where, strings.Join(e.Who, ", "), e.Start, e.End)
 	}

@@ -36,7 +36,12 @@ func main() {
 	}
 
 	sdr := pkg.NewTg(os.Getenv("TGKEY"), os.Getenv("TGCHATID"))
-	err = pkg.Send(es, sdr)
+
+	when := pkg.Today
+	if *tomorrow {
+		when = pkg.Tomorrow
+	}
+	err = pkg.Send(es, sdr, when)
 	if err != nil {
 		log.Fatal(err)
 	}

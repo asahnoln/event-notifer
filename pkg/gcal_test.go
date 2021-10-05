@@ -55,7 +55,7 @@ func TestGCalProperTiming(t *testing.T) {
 		t.Run(fmt.Sprintf("%s from %s til %s", tt.name, tt.start, tt.end), func(t *testing.T) {
 			var vals url.Values
 
-			ts := fakeServer(timeChecker(tt.start, tt.end, &vals))
+			ts := fakeServer(paramsChecker(&vals))
 			defer ts.Close()
 
 			gcal := pkg.NewGCalStore("calTestId", nil, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
@@ -71,5 +71,15 @@ func TestGCalErrorWhenWrongSettings(t *testing.T) {
 	gcal := pkg.NewGCalStore("", nil)
 	_, err := pkg.TomorrowEvents(gcal)
 	assertError(t, err, "expected error with no calendar id, got nil")
+}
 
+func TestGCalUseProperParams(t *testing.T) {
+	var vals url.Values
+	ts := fakeServer(paramsChecker(&vals))
+	gcal := pkg.NewGCalStore("testId", nil, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+	_, _ = pkg.TomorrowEvents(gcal)
+
+	assertSameString(t, "false", vals.Get("showDeleted"), "want showDeleted %q, got %q")
+	assertSameString(t, "true", vals.Get("singleEvents"), "want singleEvents %q, got %q")
+	assertSameString(t, "startTime", vals.Get("orderBy"), "want orderBy %q, got %q")
 }
