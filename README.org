@@ -12,8 +12,9 @@ What, where and who
 ** DONE Integrate sending with Telegram
 ** DONE Test times for tomorrow and today for real (use it in cal as well)
 ** DONE People names in template
-** TODO Proper date in template message
-** TODO Tomorrow/today word in template
+** DONE Proper date in template message
+** DONE Tomorrow/today word in template
+** TODO Refactor
 ** TODO Test if Tg set up correctly, have to be error somewhere
 ** TODO Shorten names to "all" or "besides X" when there's a number of people
 ** TODO Simplify api usage?
