@@ -57,17 +57,17 @@ func generateMessage(es []Event, when EventType) string {
 
 `[1:]
 
-	timeWord := time.Now().Format("02.01.2006")
+	timeWord := time.Now()
 	whenWord := "Сегодня"
 	if when == Tomorrow {
 		whenWord = "Завтра"
-		timeWord = time.Now().AddDate(0, 0, 1).Format("02.01.2006")
+		timeWord = timeWord.AddDate(0, 0, 1)
 	}
 	what := "репетиция"
 	if len(es) > 1 {
 		what = "репетиции"
 	}
-	fmt.Fprintf(message, general, whenWord, what, timeWord)
+	fmt.Fprintf(message, general, whenWord, what, timeWord.Format("02.01.2006"))
 
 	for _, e := range es {
 		fmt.Fprintf(message, tmpl, e.What, e.Where, strings.Join(e.Who, ", "), e.Start, e.End)
