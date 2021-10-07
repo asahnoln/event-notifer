@@ -18,7 +18,7 @@ func main() {
 
 	file, err := os.Open(os.Getenv("GCALMAILNAMES"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error while opening file: %v", err)
 	}
 
 	cal := pkg.NewGCalStore(os.Getenv("GCALID"), file, option.WithCredentialsFile(os.Getenv("GCALCRED")))
@@ -32,7 +32,7 @@ func main() {
 		es, err = pkg.TodayEvents(cal)
 	}
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error while retrieving events: %v", err)
 	}
 
 	sdr := pkg.NewTg(os.Getenv("TGKEY"), os.Getenv("TGCHATID"))
@@ -43,7 +43,7 @@ func main() {
 	}
 	err = pkg.Send(es, sdr, when)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error while sending message: %v", err)
 	}
 
 	fmt.Println("Sent succesfully!")

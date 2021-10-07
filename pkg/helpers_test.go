@@ -16,26 +16,31 @@ func paramsChecker(vals *url.Values) http.HandlerFunc {
 	})
 }
 
-func fakeResponse(data *pkg.Event) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		resp := &calendar.Events{
-			Items: []*calendar.Event{
+func fakeResponse(events []pkg.Event) http.HandlerFunc {
+	items := []*calendar.Event{}
+	for _, e := range events {
+		items = append(items, &calendar.Event{
+			Attendees: []*calendar.EventAttendee{
 				{
-					Attendees: []*calendar.EventAttendee{
-						{
-							Email: "ivan@gmail.com",
-						},
-					},
-					Location: data.Where,
-					Summary:  data.What,
-					Start: &calendar.EventDateTime{
-						DateTime: "2014-05-01T11:00:00Z",
-					},
-					End: &calendar.EventDateTime{
-						DateTime: "2014-05-01T13:00:00Z",
-					},
+					Email: "ivan@gmail.com",
 				},
 			},
+			Location: e.Where,
+			Summary:  e.What,
+			Start: &calendar.EventDateTime{
+				// TODO: Parse times for real checking
+				DateTime: "2014-05-01T11:00:00Z",
+			},
+			End: &calendar.EventDateTime{
+				// TODO: Parse times for real checking
+				DateTime: "2014-05-01T13:00:00Z",
+			},
+		})
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		resp := &calendar.Events{
+			Items: items,
 		}
 
 		b, err := resp.MarshalJSON()

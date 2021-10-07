@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -17,7 +18,7 @@ func MailsToNames(ms []string, r io.Reader) ([]string, error) {
 	data := make(map[string]string, len(ms))
 	err := json.NewDecoder(r).Decode(&data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("mails: decoder error: %w", err)
 	}
 
 	names := make([]string, len(ms))

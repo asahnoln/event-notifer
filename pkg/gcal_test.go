@@ -12,14 +12,23 @@ import (
 )
 
 func TestGCalSuccessfulConnection(t *testing.T) {
-	want := pkg.Event{
-		"Pair Training",
-		"Dom 36",
-		"01.05.2014 11:00",
-		"01.05.2014 13:00",
-		[]string{"Andrey Kolosov"},
+	want := []pkg.Event{
+		{
+			"Pair Training",
+			"Dom 36",
+			"01.05.2014 11:00",
+			"01.05.2014 13:00",
+			[]string{"Andrey Kolosov"},
+		},
+		{
+			"Scene Playing",
+			"White Room",
+			"01.05.2014 13:00",
+			"01.05.2014 15:00",
+			[]string{"Kamila Yu"},
+		},
 	}
-	ts := fakeServer(fakeResponse(&want))
+	ts := fakeServer(fakeResponse(want))
 	defer ts.Close()
 
 	gcal := pkg.NewGCalStore(
@@ -31,8 +40,9 @@ func TestGCalSuccessfulConnection(t *testing.T) {
 	es, err := pkg.TomorrowEvents(gcal)
 
 	assertNoError(t, err, "unexpected error while working with gcal store: %v")
-	assertSameLength(t, 1, len(es))
-	assertSameStruct(t, want, es[0])
+	assertSameLength(t, 2, len(es))
+	// TODO: Check for second structure, too
+	assertSameStruct(t, want[0], es[0])
 }
 
 func TestGCalProperTiming(t *testing.T) {

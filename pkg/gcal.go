@@ -1,7 +1,9 @@
 package pkg
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -23,7 +25,7 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 	ctx := context.Background()
 	srv, err := calendar.NewService(ctx, s.opts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gcal: service error: %w", err)
 	}
 
 	var (
@@ -47,28 +49,34 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 		Do()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gcal: events error: %w", err)
 	}
 
-	// TODO: Allocate the same length immediately as es.Items
+	mailsSource, err := io.ReadAll(s.mailsReader)
+	if err != nil {
+		return nil, fmt.Errorf("gcal: mails file reading error: %w", err)
+	}
+
 	var result []Event
 	for _, e := range es.Items {
 		mails := make([]string, len(e.Attendees))
 		for i, a := range e.Attendees {
 			mails[i] = a.Email
 		}
-		names, err := MailsToNames(mails, s.mailsReader)
+
+		// TODO: Quick Dirty fix for rereading reader
+		names, err := MailsToNames(mails, bytes.NewReader(mailsSource))
 		if err != nil {
-			return result, err
+			return result, fmt.Errorf("gcal: mails converting error: %w", err)
 		}
 
 		start, err := time.Parse(time.RFC3339, e.Start.DateTime)
 		if err != nil {
-			return result, err
+			return result, fmt.Errorf("gcal: start time parse error: %w", err)
 		}
 		end, err := time.Parse(time.RFC3339, e.End.DateTime)
 		if err != nil {
-			return result, err
+			return result, fmt.Errorf("gcal: end time parse error: %w", err)
 		}
 
 		result = append(result, Event{
@@ -80,5 +88,5 @@ func (s *GCalStore) Events(when EventType) ([]Event, error) {
 		})
 	}
 
-	return result, err
+	return result, nil
 }
