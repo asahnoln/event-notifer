@@ -64,7 +64,8 @@ func TestSendMessageForEvent(t *testing.T) {
 	es, _ := pkg.TomorrowEvents(db)
 
 	sdr := &stubSender{}
-	pkg.Send(es, sdr, pkg.Tomorrow)
+	err := pkg.Send(es, sdr, pkg.Tomorrow)
+	assertNoError(t, err, "unexpected error while sending message: %v")
 
 	want := es[0]
 	assertContains(t, want.What, sdr.result)
@@ -74,34 +75,51 @@ func TestSendMessageForEvent(t *testing.T) {
 	}
 }
 
-func TestTomorrowWordInMessage(t *testing.T) {
-	es, _ := pkg.TomorrowEvents(db)
-	sdr := &stubSender{}
-	pkg.Send(es, sdr, pkg.Tomorrow)
-	assertContains(t, "Завтра", sdr.result)
-}
+func TestDayWordInMessage(t *testing.T) {
+	tests := []struct {
+		eventType pkg.EventType
+		want      string
+	}{
+		{pkg.Tomorrow, "Завтра"},
+		{pkg.Today, "Сегодня"},
+	}
 
-func TestTodayWordInMessage(t *testing.T) {
-	es, _ := pkg.TodayEvents(db)
-	sdr := &stubSender{}
-	pkg.Send(es, sdr, pkg.Today)
-	assertContains(t, "Сегодня", sdr.result)
+	for _, tt := range tests {
+		t.Run(tt.want, func(t *testing.T) {
+			es, _ := pkg.TomorrowEvents(db)
+			sdr := &stubSender{}
+			err := pkg.Send(es, sdr, tt.eventType)
+			assertNoError(t, err, "unexpected error while sending message: %v")
+			assertContains(t, tt.want, sdr.result)
+		})
+	}
 }
 
 func TestProperDateInMessageToday(t *testing.T) {
-	es, _ := pkg.TodayEvents(db)
-	sdr := &stubSender{}
-	pkg.Send(es, sdr, pkg.Today)
+	tests := []struct {
+		eventsFunc func(pkg.Store) ([]pkg.Event, error)
+		eventType  pkg.EventType
+		date       string
+	}{
+		{pkg.TodayEvents, pkg.Today, time.Now().Format("02.01.2006")},
+		{pkg.TomorrowEvents, pkg.Tomorrow, time.Now().AddDate(0, 0, 1).Format("02.01.2006")},
+	}
 
-	date := time.Now().Format("02.01.2006")
-	assertContains(t, date, sdr.result)
+	for _, tt := range tests {
+		t.Run(tt.date, func(t *testing.T) {
+			es, _ := tt.eventsFunc(db)
+			sdr := &stubSender{}
+			err := pkg.Send(es, sdr, tt.eventType)
+			assertNoError(t, err, "unexpected error while sending message: %v")
+
+			assertContains(t, tt.date, sdr.result)
+		})
+	}
 }
 
-func TestProperDateInMessageTomorrow(t *testing.T) {
-	es, _ := pkg.TomorrowEvents(db)
+func TestSendErrorWhenEventsEmpty(t *testing.T) {
 	sdr := &stubSender{}
-	pkg.Send(es, sdr, pkg.Tomorrow)
+	err := pkg.Send([]pkg.Event{}, sdr, pkg.Tomorrow)
 
-	date := time.Now().AddDate(0, 0, 1).Format("02.01.2006")
-	assertContains(t, date, sdr.result)
+	assertError(t, err, "want error because there were 0 events sent, but got nil")
 }

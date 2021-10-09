@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -35,6 +36,10 @@ func TodayEvents(store Store) ([]Event, error) {
 }
 
 func Send(es []Event, sdr Sender, when EventType) error {
+	if len(es) == 0 {
+		return errors.New("pkg Send: events slice length should be more than zero")
+	}
+
 	return sdr.Send(generateMessage(es, when))
 }
 
