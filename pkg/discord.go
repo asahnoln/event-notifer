@@ -15,7 +15,7 @@ func NewDiscord(target string) *Discord {
 
 func (d *Discord) Send(message string) error {
 	vals := url.Values{}
-	vals.Set("content", "@everyone "+message)
+	vals.Set("content", message)
 	_, err := http.PostForm(d.Endpoint, vals)
 	return err
 }

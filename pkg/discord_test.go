@@ -49,7 +49,6 @@ func TestDiscordSendSuccess(t *testing.T) {
 
 	require.NoError(t, err, "unexpected error while sending message to Discord")
 	require.True(t, gotVals.Has("content"), "want content value set")
-	assert.Contains(t, gotVals.Get("content"), "@everyone", "content should contain @everyone mention")
 	for _, want := range es {
 		assert.Contains(t, gotVals.Get("content"), want.What, "content should contain event info")
 	}
